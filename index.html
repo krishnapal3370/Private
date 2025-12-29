@@ -215,6 +215,10 @@ section::before {
         width: 80%;
         max-width: 280px;
     }
+        .music-layout {
+        flex-direction: column;
+    }
+
 }
     /* ================= INTRO FIX (MOBILE) ================= */
 section:first-of-type .content {
@@ -230,6 +234,83 @@ section:first-of-type .content {
         margin-top: 20px;
     }
 }
+    /* ================= MUSIC SECTION ================= */
+.music-layout {
+    display: flex;
+    gap: 40px;
+    align-items: center;
+    justify-content: center;
+
+    max-width: 1000px;   /* allows side-by-side */
+    width: 100%;
+}
+
+.music-card {
+    background: rgba(0,0,0,0.55);
+    padding: 20px;
+    border-radius: 14px;
+    width: 300px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+}
+
+.music-cover img {
+    width: 100%;
+    border-radius: 10px;
+}
+
+.music-info {
+    margin: 12px 0;
+}
+
+.song-title {
+    font-size: 1.2rem;
+    font-weight: bold;
+}
+
+.song-artist {
+    font-size: 0.95rem;
+    opacity: 0.8;
+}
+
+#playPause {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    font-size: 1.2rem;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    background: #4f46e5;
+    color: white;
+}
+
+.progress-container {
+    width: 100%;
+    height: 6px;
+    background: rgba(255,255,255,0.2);
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+.progress {
+    height: 100%;
+    width: 0%;
+    background: #4f46e5;
+    border-radius: 10px;
+}
+
+.time {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.85rem;
+    margin-top: 6px;
+}
+
+.music-text {
+    max-width: 420px;
+    text-align: left;
+}
+
 
 </style>
 </head>
@@ -251,7 +332,46 @@ section:first-of-type .content {
         <p class="body-text" style="opacity:1;">A journey through our memories...</p>
     </div>
 </section>
+<section style="background-image:url('images/pose.jpeg');">
+    <h1 class="heading">Our Song</h1>
 
+    <div class="content music-layout">
+
+        <!-- LEFT: MUSIC PLAYER -->
+        <div class="music-card">
+            <div class="music-cover">
+                <img src="images/song1.jpeg" alt="Song Cover">
+            </div>
+
+            <div class="music-info">
+                <div class="song-title">ishq karu</div>
+                <div class="song-artist">Forever With You ❤️</div>
+            </div>
+
+            <button id="playPause">▶</button>
+
+            <div class="progress-container" id="progressContainer">
+                <div class="progress" id="progress"></div>
+            </div>
+
+            <div class="time">
+                <span id="currentTime">0:00</span>
+                <span id="duration">0:00</span>
+            </div>
+        </div>
+
+        <!-- RIGHT: TEXT -->
+        <div class="music-text">
+            <p class="body-text">
+                This is only song reminds me of every smile, every fight,  
+                every late-night talk and every promise we made.  
+                No matter where life takes us, this music is **us**.
+            </p>
+        </div>
+
+    </div>
+</section>
+    <audio id="audio" src="song/song1.mp3"></audio>
 <!-- SLIDE 1 -->
 <section style="background-image:url('images/1st.jpeg');">
     <h1 class="heading">Our second Year</h1>
@@ -360,6 +480,41 @@ window.addEventListener('load', handleScroll);
 /* FACE GRID */
 document.querySelectorAll(".face-block").forEach(block => {
     block.addEventListener("click", () => block.classList.toggle("revealed"));
+});
+    /* ================= MUSIC PLAYER ================= */
+const audio = document.getElementById("audio");
+const playPause = document.getElementById("playPause");
+const progress = document.getElementById("progress");
+const progressContainer = document.getElementById("progressContainer");
+const currentTimeEl = document.getElementById("currentTime");
+const durationEl = document.getElementById("duration");
+
+playPause.addEventListener("click", () => {
+    if (audio.paused) {
+        audio.play();
+        playPause.textContent = "⏸";
+    } else {
+        audio.pause();
+        playPause.textContent = "▶";
+    }
+});
+
+audio.addEventListener("timeupdate", () => {
+    const percent = (audio.currentTime / audio.duration) * 100;
+    progress.style.width = percent + "%";
+
+    const curMin = Math.floor(audio.currentTime / 60);
+    const curSec = Math.floor(audio.currentTime % 60).toString().padStart(2,"0");
+    currentTimeEl.textContent = `${curMin}:${curSec}`;
+
+    const durMin = Math.floor(audio.duration / 60);
+    const durSec = Math.floor(audio.duration % 60).toString().padStart(2,"0");
+    if (!isNaN(durMin)) durationEl.textContent = `${durMin}:${durSec}`;
+});
+
+progressContainer.addEventListener("click", e => {
+    const width = progressContainer.clientWidth;
+    audio.currentTime = (e.offsetX / width) * audio.duration;
 });
 </script>
 
